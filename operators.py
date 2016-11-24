@@ -1,3 +1,5 @@
+# TODO http://igl.ethz.ch/projects/LIM/ (this is better overall but no bindings in libigl for python yet)
+
 import numpy as np
 from PySide import QtCore
 from external import igl
@@ -42,8 +44,7 @@ class Rubber(QtCore.QObject):
 
         self.pinCoords[pinIndex] = arapMove.astype(float).tolist()
 
-        U = igl.eigen.MatrixXd(self.activeMesh.points.astype(float).tolist())
-        igl.arap_solve(igl.eigen.MatrixXd(self.pinCoords), self.arapData, U)
-        self.activeMesh.V = U
-        self.activeMesh.points = np.array(U, np.float32, order='C', copy=True)
-        self.activeMesh.updatePoints()
+        igl.arap_solve(igl.eigen.MatrixXd(self.pinCoords), self.arapData, self.activeMesh.V)
+        self.activeMesh.offsets = np.array(self.activeMesh.V, np.float32, order='C', copy=True).reshape(-1, 3)
+        self.activeMesh.offsets -= self.activeMesh.points
+        self.activeMesh.updateOffsets()

@@ -132,7 +132,7 @@ class Viewer(QtOpenGL.QGLWidget):
             )
 
     def keyPressEvent(self, event):
-        if event.key() == QtCore.Qt.Key_Space:
+        if event.key() == QtCore.Qt.Key_Space and event.modifiers() == QtCore.Qt.ControlModifier:
             menu = QtGui.QMenu(self)
             rubberAction = menu.addAction('Rubber')
             defaultAction = menu.addAction('Default')
@@ -141,6 +141,8 @@ class Viewer(QtOpenGL.QGLWidget):
                 self.app.setMode('default')
             elif action == rubberAction:
                 self.app.setMode('rubber')
+        elif event.key() == QtCore.Qt.Key_Space:
+            self.togglePlay()
 
     def wheelEvent(self, event):
         self.app.currentCamera.wheelEvent(event)

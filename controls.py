@@ -34,6 +34,14 @@ class BrushBase(QtCore.QObject):
     def updateRadius(self, radius):
         self.radius = radius
 
+    def mouseMove(self):
+        pass
+        # TODO tidy up event handling
+
+    def mousePress(self):
+        pass
+        # TODO tidy up event handling
+
     def handleMouseButton(self, x, y, modifiers, buttons, dx, dy):
         self.operating = False
         if buttons == QtCore.Qt.LeftButton:
@@ -75,7 +83,7 @@ class BrushBase(QtCore.QObject):
 
         hitID = hitIDs[0, 0]
         if hit and hitID != -1:
-            face = self.activeMesh.points[self.activeMesh.trimap[hitID]]
+            face = self.activeMesh.points[self.activeMesh.trimap[hitID]] + self.activeMesh.offsets[self.activeMesh.trimap[hitID]]
             hitPos = face[0] * barycentricCoords[0] + face[1] * barycentricCoords[1] + face[2] * barycentricCoords[2]
             self.lastHit = hitPos.astype(float).tolist()
             self.lastHitID = int(self.activeMesh.trimap[hitID][0])
@@ -103,7 +111,7 @@ class BrushBase(QtCore.QObject):
 
 
 class PinPoint(QtCore.QObject):
-    def __init__(self, color=[0., 0., 0., .3], *args):
+    def __init__(self, color=[1., 0., 0., 1.], *args):
         super(PinPoint, self).__init__(*args)
         self.verts = np.array([0, 0, 0], np.float32)
         self.count = 1
@@ -253,7 +261,7 @@ class RubberBrush(BrushBase):
 
             vertID = self.operator.pinVertIDs[-1][0]
             tempMat = QtGui.QMatrix4x4()
-            tempMat.translate(*self.activeMesh.points[vertID])
+            tempMat.translate(*(self.activeMesh.points[vertID] + self.activeMesh.offsets[vertID]))
             tempMat.rotate(QtGui.QQuaternion(1., 0., 0., -1.).normalized())
             tempMat.rotate(QtGui.QQuaternion(1. / np.linalg.norm(self.lastHitNormal), *self.lastHitNormal).normalized())
             self.pins[-1].matrix = np.array(tempMat.data(), np.float32).reshape(4, 4)

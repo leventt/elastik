@@ -256,6 +256,7 @@ class PolyMesh(Branch):
         self.indices = None
         self.counts = None
         self.points = None
+        self.offsets = None
 
         # this is the sample property for points from alembic
         self.pointProp = None
@@ -341,6 +342,8 @@ class PolyMesh(Branch):
         self.V = igl.eigen.MatrixXd(self.points.astype(float).tolist())
         self.F = igl.eigen.MatrixXi(self.trimap.astype(int).tolist())
 
+        self.offsets = np.zeros_like(self.points)
+
         del self.indices
         del self.counts
         self.indices = None
@@ -369,7 +372,7 @@ class PolyMesh(Branch):
         gl.glBufferData(
             gl.GL_ARRAY_BUFFER,
             self.points.nbytes,
-            self.points,
+            self.points + self.offsets,
             gl.GL_DYNAMIC_DRAW
         )
 
@@ -434,13 +437,13 @@ class PolyMesh(Branch):
             gl.GL_ARRAY_BUFFER,
             0,
             self.points.nbytes,
-            self.points,
+            self.points + self.offsets,
         )
 
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, 0)
         gl.glBindVertexArray(0)
 
-    def updatePoints(self):
+    def updateOffsets(self):
         if not self.initialized:
             self.init()
 
@@ -450,7 +453,7 @@ class PolyMesh(Branch):
             gl.GL_ARRAY_BUFFER,
             0,
             self.points.nbytes,
-            self.points,
+            self.points + self.offsets,
         )
 
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, 0)
