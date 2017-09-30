@@ -189,7 +189,7 @@ class MainWindow(QtGui.QMainWindow):
 
         self.setStyleSheet(stylesheet)
 
-        self.setWindowTitle('Makina')
+        self.setWindowTitle('elastik.')
         self.setMinimumSize(864, 486)
 
         centralWidget = QtGui.QWidget()
